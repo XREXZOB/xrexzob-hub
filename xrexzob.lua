@@ -1,99 +1,103 @@
---// XREX ZOB OFFICIAL
---// EMOTE + ANIMATION GUI
+--// XREX CLEAN GUI
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local Player = Players.LocalPlayer
+local Char = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Char:WaitForChild("Humanoid")
 
-local Player = game.Players.LocalPlayer
-local Character = Player.Character or Player.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
+-- === GUI ===
+local gui = Instance.new("ScreenGui")
+gui.Name = "XREX_CLEAN_GUI"
+gui.Parent = game.CoreGui
 
--- ===== CONFIG =====
-local EMOTE_SPEED = 1.5
-local GUI_NAME = "XREX ZOB OFFICIAL"
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0,320,0,380)
+main.Position = UDim2.new(0.05,0,0.25,0)
+main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
 
--- ===== EMOTE / ANIMATION LIST =====
--- 🔥 INI ANIMASI NYA (UDAH GW MASUKIN)
-local Emotes = {
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,14)
 
-    -- NORMAL / DANCE
-    {Name="Air Guitar", Id=15505454268},
-    {Name="Victory Dance", Id=15505456446},
-    {Name="Flex Walk", Id=15505459811},
-    {Name="Shuffle", Id=17748314784},
-    {Name="Rock n Roll", Id=15505458452},
+-- shadow
+local stroke = Instance.new("UIStroke", main)
+stroke.Color = Color3.fromRGB(80,80,80)
+stroke.Thickness = 1.2
+stroke.Transparency = 0.2
 
-    -- KPOP
-    {Name="TWICE Fancy", Id=13520524517},
-    {Name="TWICE LIKEY", Id=14899979575},
-    {Name="BLACKPINK DDU-DU DDU-DU", Id=16553170471},
-    {Name="BLACKPINK Pink Venom", Id=14548619594},
+-- title
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1,0,0,45)
+title.BackgroundTransparency = 1
+title.Text = "XREX ANIMATION"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextColor3 = Color3.fromRGB(255,255,255)
 
-    -- ANEH / RUSUH
-    {Name="Zombie Walk", Id=616158929},
-    {Name="Drunk Walk", Id=2510196951},
-    {Name="Glitch Move", Id=619511648},
-    {Name="Head Bang Gila", Id=33796059},
-    {Name="Broken Body", Id=369676354},
+-- container
+local holder = Instance.new("Frame", main)
+holder.Size = UDim2.new(1,-20,1,-65)
+holder.Position = UDim2.new(0,10,0,55)
+holder.BackgroundTransparency = 1
 
-    -- MEME
-    {Name="Skibidi", Id=134283166482394},
-    {Name="Rasputin", Id=114872820353992},
-    {Name="NPC Error", Id=180435571},
+local layout = Instance.new("UIListLayout", holder)
+layout.Padding = UDim.new(0,8)
+
+-- === ANIMASI ===
+local Animations = {
+    {"Zombie",616158929},
+    {"Robot",616088211},
+    {"Ninja",656117400},
+    {"Toy",782841498},
+    {"Mage",707742142},
+    {"Levitation",616006778},
+    {"Head Bang",15505454268},
+    {"Shuffle",17748314784},
 }
 
--- ===== FUNCTION =====
-local CurrentAnim
-local function PlayEmote(id)
-    if CurrentAnim then
-        CurrentAnim:Stop()
-    end
+local current
+
+local function play(id)
+    if current then current:Stop() end
     local anim = Instance.new("Animation")
     anim.AnimationId = "rbxassetid://"..id
-    CurrentAnim = Humanoid:LoadAnimation(anim)
-    CurrentAnim:Play()
-    CurrentAnim:AdjustSpeed(EMOTE_SPEED)
+    current = Humanoid:LoadAnimation(anim)
+    current:Play()
 end
 
--- ===== GUI =====
-local ScreenGui = Instance.new("ScreenGui", Player.PlayerGui)
-ScreenGui.Name = GUI_NAME
-
-local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 420, 0, 360)
-Main.Position = UDim2.new(0.5, -210, 0.5, -180)
-Main.Active = true
-Main.Draggable = true
-
--- 🌈 RAINBOW GERAK
-task.spawn(function()
-    local h = 0
-    while task.wait(0.03) do
-        h = (h + 0.01) % 1
-        Main.BackgroundColor3 = Color3.fromHSV(h,1,1)
-    end
-end)
-
-local Title = Instance.new("TextLabel", Main)
-Title.Size = UDim2.new(1,0,0,40)
-Title.BackgroundTransparency = 1
-Title.Text = GUI_NAME
-Title.Font = Enum.Font.GothamBlack
-Title.TextSize = 22
-Title.TextColor3 = Color3.new(1,1,1)
-
-local Layout = Instance.new("UIListLayout", Main)
-Layout.Padding = UDim.new(0,6)
-Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
--- ===== BUTTON EMOTE =====
-for _,emote in ipairs(Emotes) do
-    local btn = Instance.new("TextButton", Main)
-    btn.Size = UDim2.new(0.9,0,0,30)
-    btn.Text = emote.Name
+-- button maker
+local function makeButton(text,callback)
+    local btn = Instance.new("TextButton", holder)
+    btn.Size = UDim2.new(1,0,0,36)
+    btn.Text = text
     btn.Font = Enum.Font.Gotham
     btn.TextSize = 14
-    btn.BackgroundColor3 = Color3.fromRGB(25,25,25)
-    btn.TextColor3 = Color3.new(1,1,1)
+    btn.TextColor3 = Color3.fromRGB(230,230,230)
+    btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    btn.BorderSizePixel = 0
 
-    btn.MouseButton1Click:Connect(function()
-        PlayEmote(emote.Id)
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
+
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn,TweenInfo.new(0.2),
+            {BackgroundColor3 = Color3.fromRGB(45,45,45)}):Play()
+    end)
+
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn,TweenInfo.new(0.2),
+            {BackgroundColor3 = Color3.fromRGB(30,30,30)}):Play()
+    end)
+
+    btn.MouseButton1Click:Connect(callback)
+end
+
+for _,v in ipairs(Animations) do
+    makeButton(v[1], function()
+        play(v[2])
     end)
 end
+
+makeButton("STOP ANIMATION", function()
+    if current then current:Stop() end
+end)
