@@ -344,8 +344,87 @@ local function PlayEmote(id)
 end
 
 -- ===== GUI =====
-local ScreenGui = Instance.new("ScreenGui", Player.PlayerGui)
+-- ===== CLEAN GUI (PASTE ALL) =====
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "XREXZOB_GUI"
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+-- MAIN
+local Main = Instance.new("Frame", ScreenGui)
+Main.Size = UDim2.new(0, 650, 0, 380)
+Main.Position = UDim2.new(0.5, -325, 0.5, -190)
+Main.BackgroundColor3 = Color3.fromRGB(28, 32, 48)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,14)
+
+-- TOP BAR
+local Top = Instance.new("TextLabel", Main)
+Top.Size = UDim2.new(1, 0, 0, 45)
+Top.BackgroundTransparency = 1
+Top.Text = "XREXZOB Hub | Animations & Emotes"
+Top.TextColor3 = Color3.fromRGB(230,230,230)
+Top.Font = Enum.Font.GothamBold
+Top.TextSize = 16
+
+-- SIDEBAR
+local Side = Instance.new("Frame", Main)
+Side.Position = UDim2.new(0, 0, 0, 45)
+Side.Size = UDim2.new(0, 170, 1, -45)
+Side.BackgroundColor3 = Color3.fromRGB(22,26,40)
+Side.BorderSizePixel = 0
+Instance.new("UICorner", Side).CornerRadius = UDim.new(0,12)
+
+local SidePad = Instance.new("UIPadding", Side)
+SidePad.PaddingTop = UDim.new(0,15)
+SidePad.PaddingLeft = UDim.new(0,10)
+SidePad.PaddingRight = UDim.new(0,10)
+
+local SideList = Instance.new("UIListLayout", Side)
+SideList.Padding = UDim.new(0,10)
+
+-- CONTENT
+local Content = Instance.new("Frame", Main)
+Content.Position = UDim2.new(0, 180, 0, 55)
+Content.Size = UDim2.new(1, -195, 1, -70)
+Content.BackgroundColor3 = Color3.fromRGB(38,42,60)
+Content.BorderSizePixel = 0
+Instance.new("UICorner", Content).CornerRadius = UDim.new(0,12)
+
+-- CONTENT TITLE
+local CT = Instance.new("TextLabel", Content)
+CT.Size = UDim2.new(1, 0, 0, 40)
+CT.BackgroundTransparency = 1
+CT.Text = "Emotes"
+CT.TextColor3 = Color3.fromRGB(220,220,220)
+CT.Font = Enum.Font.GothamBold
+CT.TextSize = 14
+
+-- MENU BUTTON FUNCTION
+local function MenuButton(txt)
+    local b = Instance.new("TextButton", Side)
+    b.Size = UDim2.new(1, 0, 0, 38)
+    b.Text = txt
+    b.BackgroundColor3 = Color3.fromRGB(45,50,75)
+    b.TextColor3 = Color3.new(1,1,1)
+    b.Font = Enum.Font.Gotham
+    b.TextSize = 13
+    b.BorderSizePixel = 0
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+    return b
+end
+
+-- SIDEBAR MENU
+MenuButton("Main")
+MenuButton("Emotes")
+MenuButton("Animations")
+MenuButton("Custom Anim")
+MenuButton("Settings")
 
 local Frame = Instance.new("Frame", ScreenGui)
 Frame.Size = UDim2.new(0, 350, 0, 420)
