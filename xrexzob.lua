@@ -1,21 +1,23 @@
---========================================
---        XREX ZOB OFFICIAL
---========================================
+-- ===============================
+--      XREX ZOB OFFICIAL
+-- ===============================
 
 -- ===== CONFIG =====
-local SCRIPT_NAME = "XREX ZOB OFFICIAL"
-local USE_KEY = true
 local KEY = "XREXGANTENG"
 
--- ===== EMOTE LIST (ISI SENDIRI) =====
-local Emotes = {
-    -- ["Nama Emote"] = 1234567890,
-}
-
--- ===== EMOTE SPEED (EDIT SENDIRI) =====
+-- EMOTE SPEED (LU EDIT)
 local EmoteSpeed = {
     Current = 1
-	['Fashion'] = 3333331310; 
+}
+
+-- EMOTE LIST (LU BOLEH TAMBAH SENDIRI)
+local Emotes = {
+    ["Dance 1"] = 15679621440,
+    ["Dance 2"] = 15505458452,
+    ["Pose"] = 15505454268,
+    -- TAMBAH DI SINI:
+    -- ["Nama Emote"] = ID,
+		['Fashion'] = 3333331310; 
 	["Baby Dance"] = 4265725525; 
 	["Cha-Cha"] = 6862001787; 
 	['Monkey'] = 3333499508; 
@@ -279,87 +281,163 @@ local EmoteSpeed = {
 	['TWICE TAKEDOWN DANCE 2'] = 127104635954695;
 }
 
-
--- ===== ANIMATIONS (ZOMBIE + LAINNYA) =====
+-- ANIMATIONS (DITAMBAH, GA GANTI GUI)
 local Animations = {
-
     Zombie = {
         Idle = 616158929,
-        Idle2 = 616160636,
         Walk = 616168032,
-        Run  = 616163682,
+        Run = 616163682,
         Jump = 616161997,
         Climb = 616156119,
-        Fall = 616157476,
-        Weight = 9
+        Fall = 616157476
     },
-
     Stylish = {
         Idle = 616136790,
         Walk = 616146177,
-        Run  = 616140816,
-        Jump = 616139451,
-        Weight = 9
-    },
-
-    Robot = {
-        Idle = 616088211,
-        Walk = 616095330,
-        Run  = 616091570,
-        Jump = 616090535,
-        Weight = 9
+        Run = 616140816,
+        Jump = 616139451
     }
-
-    -- ➕ mau nambah animasi?
-    -- copy salah satu template di atas
 }
 
 -- ===== SERVICES =====
 local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
 local Player = Players.LocalPlayer
 
--- ===== GUI =====
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "XrexZobGui"
-ScreenGui.Parent = Player.PlayerGui
+-- ===== HUMANOID =====
+local function getHumanoid()
+    local char = Player.Character or Player.CharacterAdded:Wait()
+    return char:WaitForChild("Humanoid")
+end
 
-local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 420, 0, 320)
-Frame.Position = UDim2.new(0.5, -210, 0.5, -160)
-Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-Frame.BorderSizePixel = 0
-Frame.Active = true
-Frame.Draggable = true
+-- ===== EMOTE SYSTEM (ANTI ERROR) =====
+local CurrentTrack
 
-local Title = Instance.new("TextLabel", Frame)
-Title.Size = UDim2.new(1,0,0,40)
-Title.Text = SCRIPT_NAME
-Title.TextColor3 = Color3.new(1,1,1)
-Title.BackgroundTransparency = 1
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
-
--- ===== KEY SYSTEM =====
-if USE_KEY then
-    if KEY ~= "XREXGANTENG" then
-        Player:Kick("KEY SALAH ❌")
-        return
+local function StopEmote()
+    if CurrentTrack then
+        pcall(function()
+            CurrentTrack:Stop()
+            CurrentTrack:Destroy()
+        end)
+        CurrentTrack = nil
     end
 end
 
--- ===== EMOTE LOADER =====
 local function PlayEmote(id)
-    local char = Player.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
+    if not id then return end
+    local hum = getHumanoid()
+    StopEmote()
 
     local anim = Instance.new("Animation")
-    anim.AnimationId = "rbxassetid://"..id
-    local track = hum:LoadAnimation(anim)
-    track:Play()
-    track:AdjustSpeed(EmoteSpeed.Current)
+    anim.AnimationId = "rbxassetid://" .. id
+
+    local track
+    local ok = pcall(function()
+        track = hum:LoadAnimation(anim)
+    end)
+
+    if ok and track then
+        track:Play()
+        track:AdjustSpeed(EmoteSpeed.Current)
+        CurrentTrack = track
+    end
 end
 
--- ===== TEST PRINT =====
+-- ===== GUI =====
+local ScreenGui = Instance.new("ScreenGui", Player.PlayerGui)
+ScreenGui.Name = "XREXZOB_GUI"
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 350, 0, 420)
+Frame.Position = UDim2.new(0.5, -175, 0.5, -210)
+Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Frame.BorderSizePixel = 0
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Text = "XREX ZOB OFFICIAL"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.BackgroundTransparency = 1
+Title.TextScaled = true
+
+-- ===== KEY INPUT =====
+local KeyBox = Instance.new("TextBox", Frame)
+KeyBox.Size = UDim2.new(0.8, 0, 0, 30)
+KeyBox.Position = UDim2.new(0.1, 0, 0, 50)
+KeyBox.PlaceholderText = "ENTER KEY"
+KeyBox.Text = ""
+KeyBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+KeyBox.TextColor3 = Color3.new(1,1,1)
+
+local KeyBtn = Instance.new("TextButton", Frame)
+KeyBtn.Size = UDim2.new(0.8, 0, 0, 30)
+KeyBtn.Position = UDim2.new(0.1, 0, 0, 90)
+KeyBtn.Text = "UNLOCK"
+KeyBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+KeyBtn.TextColor3 = Color3.new(1,1,1)
+
+local ContentFrame = Instance.new("Frame", Frame)
+ContentFrame.Size = UDim2.new(1, -20, 1, -140)
+ContentFrame.Position = UDim2.new(0, 10, 0, 130)
+ContentFrame.Visible = false
+ContentFrame.BackgroundTransparency = 1
+
+KeyBtn.MouseButton1Click:Connect(function()
+    if KeyBox.Text == KEY then
+        ContentFrame.Visible = true
+        KeyBox.Visible = false
+        KeyBtn.Visible = false
+    else
+        KeyBtn.Text = "WRONG KEY"
+        task.wait(1)
+        KeyBtn.Text = "UNLOCK"
+    end
+end)
+
+-- ===== EMOTE BUTTONS =====
+local y = 0
+for name, id in pairs(Emotes) do
+    local btn = Instance.new("TextButton", ContentFrame)
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Position = UDim2.new(0, 0, 0, y)
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    btn.TextColor3 = Color3.new(1,1,1)
+
+    btn.MouseButton1Click:Connect(function()
+        PlayEmote(id)
+    end)
+
+    y = y + 35
+end
+
+-- ===== SPEED CONTROL =====
+local SpeedBtn = Instance.new("TextButton", ContentFrame)
+SpeedBtn.Size = UDim2.new(1, 0, 0, 30)
+SpeedBtn.Position = UDim2.new(0, 0, 0, y + 10)
+SpeedBtn.Text = "Speed: 1x"
+SpeedBtn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+SpeedBtn.TextColor3 = Color3.new(1,1,1)
+
+SpeedBtn.MouseButton1Click:Connect(function()
+    EmoteSpeed.Current = EmoteSpeed.Current + 0.5
+    if EmoteSpeed.Current > 3 then
+        EmoteSpeed.Current = 0.5
+    end
+    SpeedBtn.Text = "Speed: "..EmoteSpeed.Current.."x"
+    if CurrentTrack then
+        CurrentTrack:AdjustSpeed(EmoteSpeed.Current)
+    end
+end)
+
+-- ===== STOP BUTTON =====
+local StopBtn = Instance.new("TextButton", ContentFrame)
+StopBtn.Size = UDim2.new(1, 0, 0, 30)
+StopBtn.Position = UDim2.new(0, 0, 0, y + 50)
+StopBtn.Text = "STOP EMOTE"
+StopBtn.BackgroundColor3 = Color3.fromRGB(150,50,50)
+StopBtn.TextColor3 = Color3.new(1,1,1)
+
+StopBtn.MouseButton1Click:Connect(StopEmote)
+
 print("✅ XREX ZOB OFFICIAL LOADED")
